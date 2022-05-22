@@ -9,6 +9,7 @@ class Piece:
     def __init__(self, team, pos):
         self.team = team
         self.pos = pos
+        self.has_moved = False
         self.surf = pygame.transform.scale(pygame.image.load("../images/"+(self.__class__.filename_white if team == 1 else self.__class__.filename_black)), (100, 100))
 
     def list_possible_moves(self, board):
@@ -63,7 +64,6 @@ class Bishop(Piece):
                     continue
                 moves.append(posx)
                 i+=1
-            print('--')
 
         return moves
 

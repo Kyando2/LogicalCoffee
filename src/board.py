@@ -56,12 +56,21 @@ class Board:
         selected_piece = self.get_piece_from_mouse_position(pos)
         if selected_piece:
             if selected_piece.team == self.turn:
-                self.selected = selected_piece
-                # Show possible moves
-                for pos in selected_piece.list_possible_moves(board=self):
-                    location = (find_screen_location_from_position(coords=pos)[0] + 40,
-                                find_screen_location_from_position(coords=pos)[1] + 40)
-                    self.to_blit.append((self.ys, location))
+                if self.selected.__class__ == King and selected_piece.__class__ == Rook and self.selected.team == self.turn and selected_piece.team == self.turn and selected_piece.has_moved == False and self.selected.has_moved == False:
+                    if self.pieces[self.selected.pos[0]+(1 if selected_piece.pos[0]>self.selected.pos[0] else -1)][self.selected.pos[1]] is None and self.pieces[self.selected.pos[0]+(2 if selected_piece.pos[0]>self.selected.pos[0] else -2)][self.selected.pos[1]] is None:
+                        left_or_right = not selected_piece.pos[0] > self.selected.pos[0]
+                        self.pieces[self.selected.pos[0]+(2 if selected_piece.pos[0]>self.selected.pos[0] else -2)][self.selected.pos[1]] = self.selected
+                        self.selected.pos = (self.selected.pos[0]+(2 if selected_piece.pos[0]>self.selected.pos[0] else -2), self.selected.pos[1])
+                        self.pieces[self.selected.pos[0]+(1 if left_or_right else -1)][self.selected.pos[1]] = selected_piece
+                        selected_piece.pos = (self.selected.pos[0]+(1 if left_or_right else -1), self.selected.pos[1])
+                        self.switch_turn()
+                else:
+                    self.selected = selected_piece
+                    # Show possible moves
+                    for pos in selected_piece.list_possible_moves(board=self):
+                        location = (find_screen_location_from_position(coords=pos)[0] + 40,
+                                    find_screen_location_from_position(coords=pos)[1] + 40)
+                        self.to_blit.append((self.ys, location))
             else:
                 if self.selected:
                     if self.selected.team == self.turn:
@@ -76,6 +85,7 @@ class Board:
                             except:
                                 pass
                             self.pieces[self.selected.pos[0]][self.selected.pos[1]] = self.selected
+                            self.selected.has_moved = True
                             self.switch_turn()
         else:
             if self.selected:
@@ -88,6 +98,7 @@ class Board:
                         self.selected.pos = tuple(x)
                         self.pieces[old_pos[0]][old_pos[1]] = None
                         self.pieces[self.selected.pos[0]][self.selected.pos[1]] = self.selected
+                        self.selected.has_moved = True
                         self.switch_turn()
 
     def switch_turn(self):
